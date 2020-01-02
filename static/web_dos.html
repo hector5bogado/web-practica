@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="jquery.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="bootstrap.css">
+    <script src="bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="jquery.dataTables.min.css">
+    <script src="jquery.dataTables.min.js"></script>
+    
+    <title>Autos</title>
+    <style>
+        h1 {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            background-color: whitesmoke;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            //esconder boton editar al cargar la pagina
+            $("#boton_editar").hide();
+            $("#boton_borrar").hide();
+
+            //esconde boton editar, muestar boton guardar, limpiar los campos del formulario
+            $("#boton_limpiar_campos").click(function () {
+                $("#boton_editar").hide();
+                $("#boton_borrar").hide();
+                $("#boton_guardar").show();
+                $('#formulario_autor').trigger("reset");
+            });
+
+            //Al hacer click sobre el boton borrar
+            $("#boton_borrar").click(function () {
+                var id = $("#id").val();
+                $.ajax({
+                    url: 'http://127.0.0.1:3000/autos?id='+ id,
+                    type: 'DELETE',
+                    success: function (result) {
+                        alert("La marca se borro!");  
+                        location.reload(true); 
+                    }
+                });
+            });
+
+            //estira el autor para modificar
+            $("#id").on('keypress', function (e) {
+                if (e.which == 13) {
+                    var id = $("#id").val();
+                    $.get("http://127.0.0.1:3000/autos?id=" + id, function (respuesta, status) {
+                        $("#marca").val(respuesta.data[0].marca);
+                        $("#boton_guardar").hide();
+                        $("#boton_editar").show();
+                        $("#boton_borrar").show();
+                    });
+                }
+            });
+
+            var tabla_autor = $('#listado_autor').DataTable({
+                "scrollY": "300px",
+                "scrollX": "200px",
+                "scrollCollapse": true,
+                "paging": true,
+                "ajax": "http://127.0.0.1:3000/autos",
+                "columns": [
+                    {
+                        "data": "id"
+                    }, {
+                        "data": "marca"
+                    },
+                ]
+            });
+        });
+    </script>
+</head>
+
+
+
+
+<body style="background-color:whitesmoke;">
+    <!--------------------------------------------------------------------------------------------------------------->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="web_uno.html">web 1</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarColor01">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="web_dos.html">web 2<span class="sr-only">(current)</span></a>
+            </li>
+          </ul>
+
+        </div>
+      </nav>
+<!--------------------------------------------------------------------------------------------------------------->
+
+
+    <div class="container">
+
+        <h1 class="text-center" id="titulo_formulario">Autos</h1>
+
+        <!-- Formulario para registrar un autor -->
+        <form id="formulario_autor" action="http://127.0.0.1:3000/autos" method="post">
+            <table border="0">
+                <tr>
+                    <th>
+                        <label for="id">Código:</label>
+                    </th>
+                    <th>
+                        <input type="number" name="id" id="id" required>
+                    </th>
+
+                </tr>
+
+                <tr>
+                    <th><label for="marca">Marca:</label></th>
+                    <th><input type="text" name="marca" id="marca" required></th>
+                </tr>
+
+            </table>
+
+            <br>
+            <div class="text-center">
+                <input type="submit" value="GUARDAR" class="btn btn-outline-primary" id="boton_guardar">
+                <input type="submit" value="EDITAR" class="btn btn-outline-primary" id="boton_editar">
+                <input type="button" value="BORRAR" class="btn btn-outline-danger" id="boton_borrar">
+                <input type="button" value="LIMPIAR CAMPOS" class="btn btn-outline-warning" id="boton_limpiar_campos">
+            </div>
+        </form>
+
+
+        <br>
+        <table id="listado_autor" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Marca</th>
+                </tr>
+            </thead>
+        </table>
+
+    </div>
+
+</body>
+
+</html>
